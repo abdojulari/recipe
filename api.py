@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for
 from sql import create_connection
+from sqlite3 import Error
 import os
 
 
@@ -22,6 +23,24 @@ def about():
 
 connection = create_connection('sm_app.sqlite')
 
+def execute_query(connection, query):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(query)
+        connection.commit()
+        print("Query executed successfully")
+    except Error as e:
+        print(f"The error '{e}' occurred!")
+
+create_recipe_table = """
+CREATE TABLE IF NOT EXISTS recipes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  image TEXT NOT NULL,
+  link TEXT NOT NULL
+);
+"""
+execute_query(connection, create_recipe_table)  
 
 
 if __name__ == '__main__':
